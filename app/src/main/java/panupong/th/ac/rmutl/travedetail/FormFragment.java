@@ -1,15 +1,19 @@
 package panupong.th.ac.rmutl.travedetail;
 
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -23,7 +27,7 @@ import java.util.ArrayList;
  */
 public class FormFragment extends Fragment {
     //    Explicit
-    private String nameString, surnameString, genderString, ageString, travelString;
+    private String nameString, surnameString, genderString, ageString, travelString ="0";
     private boolean ageABoolean = true; // true Not Choose Age
 
 
@@ -40,7 +44,24 @@ public class FormFragment extends Fragment {
         saveController();
 //        age Controller
         ageController();
+
+//        travelController
+        travelController();
     }   // Main Method
+
+    private void travelController() {
+        final CheckBox checkBox = getView().findViewById(R.id.chbTravel);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkBox.isChecked()) {
+                    travelString ="1";
+                } else {
+                    travelString = "0";
+                }
+            }
+        });
+    }
 
     private void ageController() {
         final String[] strings = new String[]{"Please Choose Age","0 - 10","11 - 20","21 - 30","31 - 40","41 - 50","Over 51"};
@@ -112,12 +133,48 @@ public class FormFragment extends Fragment {
                     myAlert.normalDialog("Have space", "Please Fill Every Blank");
                 } else if (!(maleRadioButton.isChecked() ||femaleRadioButton.isChecked())) {
                     myAlert.normalDialog("Non Gender","Please Choose Male or Female");
-                }else if (ageABoolean){
-                    myAlert.normalDialog("Non Choose Age","Please Choose Age");
+                } else if (ageABoolean) {
+                    myAlert.normalDialog("Non Choose Age", "Please Choose Age");
+                } else {
+                    confrimData();
                 }
 
             } //onClick
         });
+    }
+
+    private void confrimData() {
+        String[] genderStrings = new String[]{"ชาย", "หญิง"};
+        String[] travelStrings = new String[]{"ไม่เที่ยว", "เที่ยว"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setCancelable(false);
+        builder.setTitle("Confrim data");
+        builder.setMessage("Name ==>" + nameString + "\n" + "Surname ==>" + surnameString + "\n" + "Gender ==>" + genderStrings[Integer.parseInt(genderString)]
+                + "\n" + "Age ==>" + ageString + "\n" + "Travel ==>" + travelStrings[Integer.parseInt(travelString)]);
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setPositiveButton("Confrim", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                saveData();
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    private void saveData() {
+        MyManager myManager = new MyManager(getActivity());
+        myManager.addValueSQlite(nameString, surnameString, genderString, ageString, travelString);
+
+        Intent intent = getActivity().getIntent();
+        getActivity().finish();
+        startActivity(intent);
     }
 
     @Override

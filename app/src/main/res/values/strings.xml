@@ -13,5 +13,8 @@
     <string name="Female">หญิง</string>
     <string name="Age">อายุ</string>
     <string name="Travel">เที่ยว</string>
+    <string name="name_sur">Panupong Chanthothai</string>
+    <string name="School">Infomation Technology</string>
+    <string name="title_activity_maps">Map</string>
 
 </resources>
